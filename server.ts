@@ -4,10 +4,13 @@ import fs from 'fs';
 import bodyParser from 'body-parser';
 import { v4 as uuid } from 'uuid';
 import { addDays, compareAsc, compareDesc, format, parse } from 'date-fns';
+import cors from 'cors';
 
 const PORT = process.env.PORT || 4000;
 
 app.use(bodyParser.json());
+
+app.use(cors());
 
 app.get("/", (req, res) => {
     res.send("Hi");
