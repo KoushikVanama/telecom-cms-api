@@ -1,1 +1,19 @@
-[{"name":"werewrwerwerwer","dob":"02/01/1994","email":"sai@gmail.com","aadhaar":123456789012,"reg_date":"02/02/2020","mobile":1234567890,"id":"4e115813-1a44-4a66-a1d6-02a6586c39d5","plan":{"name":"Platinum365","cost":499,"validity":365,"status":"Active"}}]
+[
+    {
+        "name": "werewrwerwerwer",
+        "dob": "02/01/1994",
+        "email": "sai@gmail.com",
+        "aadhaar": 123456789012,
+        "reg_date": "02/02/2020",
+        "mobile": 1234567890,
+        "id": "9da6827a-0e26-45f4-91aa-cab5d12a4b5f",
+        "plan": {
+            "name": "Silver90",
+            "cost": 199,
+            "validity": 90,
+            "status": "Active",
+            "reg_date": "25-03-2024",
+            "renew_date": "23-06-2024"
+        }
+    }
+]

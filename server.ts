@@ -66,10 +66,7 @@ app.post('/api/customers/:customerId/assign-plan', (req, res) => {
     if (!customer) {
         return res.status(404).json({ message: 'Customer not found' });
     }
-    const isValidPlan = plans.some((item: any) =>
-        item.name === chosenPlan.name && item.cost === chosenPlan.cost && item.validity === chosenPlan.validity
-    );
-    if (!isValidPlan) {
+    if (!isValidPlan(chosenPlan.name, chosenPlan.cost, chosenPlan.validity)) {
         return res.status(404).json({ message: 'Incorrect plan details' });
     }
     customer.plan = chosenPlan;
@@ -114,10 +111,7 @@ app.put('/api/customers/:customerId/upgrade-downgrade-plan', (req, res) => {
     if (!planExistsWithOldPlanName) {
         return res.status(404).json({ message: 'Plan not found' });
     }
-    const isValidPlan = plans.some((item: any) =>
-        item.name === newPlanName && item.cost === planCost && item.validity === planValidity
-    );
-    if (!isValidPlan) {
+    if (!isValidPlan(newPlanName, planCost, planValidity)) {
         return res.status(404).json({ message: 'Incorrect plan details' });
     }
     customer.plan = {
@@ -133,6 +127,12 @@ app.put('/api/customers/:customerId/upgrade-downgrade-plan', (req, res) => {
     saveCustomers();
     res.json({ message: 'Plan upgraded/downgraded successfully' });
 });
+
+const isValidPlan = (name: string, cost: number, validity: number) => {
+    return plans.some((item: any) =>
+        item.name === name && item.cost === cost && item.validity === validity
+    );
+}
 
 // get all customers
 app.get('/api/customers', (req, res) => {
