@@ -3,6 +3,7 @@ const app = express();
 import fs from 'fs';
 import bodyParser from 'body-parser';
 import { v4 as uuid } from 'uuid';
+import { addDays, format } from 'date-fns';
 
 const PORT = process.env.PORT || 4000;
 
@@ -72,6 +73,10 @@ app.post('/api/customers/:customerId/assign-plan', (req, res) => {
         return res.status(404).json({ message: 'Incorrect plan details' });
     }
     customer.plan = chosenPlan;
+    customer.plan.reg_date = format(new Date(), "dd-MM-yyyy");
+    const parsedDate = new Date(customer.plan.reg_date.split("-").reverse().join("-"));
+    const renewal_date = addDays(parsedDate, chosenPlan.validity);
+    customer.plan.renew_date = format(renewal_date, "dd-MM-yyyy");
     saveCustomers();
     res.json({ message: 'Plan assigned successfully' });
 });
