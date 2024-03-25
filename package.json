@@ -1,0 +1,22 @@
+{
+  "name": "telecom-cms-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "tsc && nodemon dist/server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.11.30",
+    "express": "^4.19.1",
+    "nodemon": "^3.1.0",
+    "typescript": "^5.4.3"
+  }
+}
