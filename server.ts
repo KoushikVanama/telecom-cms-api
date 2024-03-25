@@ -3,7 +3,7 @@ const app = express();
 import fs from 'fs';
 import bodyParser from 'body-parser';
 import { v4 as uuid } from 'uuid';
-import { addDays, format } from 'date-fns';
+import { addDays, compareAsc, compareDesc, format, parse } from 'date-fns';
 
 const PORT = process.env.PORT || 4000;
 
@@ -79,6 +79,59 @@ app.post('/api/customers/:customerId/assign-plan', (req, res) => {
     customer.plan.renew_date = format(renewal_date, "dd-MM-yyyy");
     saveCustomers();
     res.json({ message: 'Plan assigned successfully' });
+});
+
+// renew plan for customer
+app.patch('/api/customers/:customerId/renew-plan', (req, res) => {
+    const customerId = req.params.customerId;
+    const { renewal_date, planStatus } = req.body;
+    const customer = customers.find((c: any) => c.id === customerId);
+    if (!customer) {
+        return res.status(404).json({ message: 'Customer not found' });
+    }
+    const existingPlan = customer.plan;
+    const existingDate = parse(existingPlan.renew_date, 'dd-MM-yyyy', new Date());
+    const newDate = parse(renewal_date, 'dd-MM-yyyy', new Date());
+    console.log(compareAsc(existingDate, newDate), "compareAsc(existingDate, newDate)");
+    if (compareDesc(existingDate, newDate) === -1) {
+        return res.status(404).json({ message: 'Entered renewal_date is invalid (below renew_date' });
+    }
+    customer.plan.renew_date = renewal_date;
+    customer.plan.status = planStatus;
+    saveCustomers();
+    res.json({ message: 'Plan renewed successfully' });
+});
+
+// upgrade/downgrade plan for customer
+app.put('/api/customers/:customerId/upgrade-downgrade-plan', (req, res) => {
+    const customerId = req.params.customerId;
+    const { oldPlanName, newPlanName, planValidity, planStatus, planCost } = req.body;
+    const customer = customers.find((c: any) => c.id === customerId);
+    if (!customer) {
+        return res.status(404).json({ message: 'Customer not found' });
+    }
+    const planExistsWithOldPlanName = customer.plan.name === oldPlanName;
+    if (!planExistsWithOldPlanName) {
+        return res.status(404).json({ message: 'Plan not found' });
+    }
+    const isValidPlan = plans.some((item: any) =>
+        item.name === newPlanName && item.cost === planCost && item.validity === planValidity
+    );
+    if (!isValidPlan) {
+        return res.status(404).json({ message: 'Incorrect plan details' });
+    }
+    customer.plan = {
+        name: newPlanName,
+        cost: planCost,
+        validity: planValidity,
+        status: planStatus
+    };
+    customer.plan.reg_date = format(new Date(), "dd-MM-yyyy");
+    const parsedDate = new Date(customer.plan.reg_date.split("-").reverse().join("-"));
+    const renewal_date = addDays(parsedDate, planValidity);
+    customer.plan.renew_date = format(renewal_date, "dd-MM-yyyy");
+    saveCustomers();
+    res.json({ message: 'Plan upgraded/downgraded successfully' });
 });
 
 // get all customers
